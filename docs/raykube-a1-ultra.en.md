@@ -1,7 +1,5 @@
 # Raykube A1 Ultra in Home Assistant (local, over BLE)
 
-🇵🇱 Wersja polska: [raykube-a1-ultra.md](raykube-a1-ultra.md)
-
 This fork of [ShonP40/Tuya-BLE](https://github.com/ShonP40/Tuya-BLE) adds the full set of settings of
 Raykube locks (`jtmspro`, `hc7n0urm` and `rlyxv7pe`) to Home Assistant.
 
