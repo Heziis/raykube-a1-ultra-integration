@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/Heziis/raykube-a1-ultra-integration/blob/master/docs/raykube-a1-ultra.en.md
+    about: Setup, devices.json, keys, arming mode and diagnostics.
+  - name: Upstream integration
+    url: https://github.com/jaroslaw-krolikowski/raykube-a1-ultra-integration
+    about: Original integration by Jaroslaw Krolikowski (issues not specific to this fork).

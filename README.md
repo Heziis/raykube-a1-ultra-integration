@@ -29,6 +29,24 @@ itself a fork of [ShonP40/Tuya-BLE](https://github.com/ShonP40/Tuya-BLE). Licens
 
 ---
 
+## Installation
+
+### HACS (recommended)
+
+1. In HACS, open the menu and choose **Custom repositories**.
+2. Add `https://github.com/Heziis/raykube-a1-ultra-integration` with type **Integration**.
+3. Find "Raykube A1 Ultra (Tuya BLE)" in HACS and install it.
+4. Restart Home Assistant.
+
+### Manual
+
+1. Copy `custom_components/tuya_local_ble` into your Home Assistant `custom_components` directory.
+2. Restart Home Assistant.
+
+Then add the lock: **Settings > Devices & services > Add integration > Raykube A1 Ultra (Tuya BLE)**.
+Full setup (including `devices.json` and where to get the keys): [docs/raykube-a1-ultra.en.md](docs/raykube-a1-ultra.en.md).
+
+
 
 A fork of [ShonP40/Tuya-BLE](https://github.com/ShonP40/Tuya-BLE) (MIT) that gives Home Assistant local
 control of the **Raykube A1 Ultra** lock (`jtmspro`, `hc7n0urm`, `rlyxv7pe`)
@@ -49,7 +67,7 @@ Lock entities:
 Command safety: a command that does not reach the lock in time is dropped, never sent later; the state
 shown is the one the lock reports; locking is always possible. Details in the documentation.
 
-The UI (entities, options, card, blueprint) is available in English and Polish.
+The UI (entities, options, card, blueprint) is available in English.
 
 `python3 tools/tuya_export.py` fetches the data from the Tuya Cloud (keys, `ble_unlock_check`, DP list).
 
