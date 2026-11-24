@@ -9,6 +9,8 @@ from pathlib import Path
 
 import voluptuous as vol
 
+import asyncio
+
 from bleak_retry_connector import BLEAK_RETRY_EXCEPTIONS as BLEAK_EXCEPTIONS, get_device
 
 from homeassistant.components import bluetooth
@@ -190,7 +192,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     '''
     #hass.async_create_task(device.update())
 
-    await device.update()
+    # LOCAL PATCH 2026-11-24 (backup: __init__.py.bak_pre_startup_bound):
+    # bound the startup wait so HA finishes booting even when the lock does not
+    # answer; HA retries this entry in the background (ConfigEntryNotReady).
+    try:
+        await asyncio.wait_for(device.update(), 90)
+    except (asyncio.TimeoutError,) + BLEAK_EXCEPTIONS as ex:
+        try:
+            await device.stop()
+        except Exception:  # noqa: BLE001
+            pass
+        raise ConfigEntryNotReady(
+            f"Could not communicate with Tuya BLE device with address {address}"
+        ) from ex
     
     mode = get_connection_mode(entry.options)
     sleepy_lock = device.product_id in ("hc7n0urm", "y2yaegze")

@@ -6,6 +6,30 @@
 
 Author: **Jarosław Królikowski** ([@jaroslaw-krolikowski](https://github.com/jaroslaw-krolikowski))
 
+## About this fork
+
+Fork maintainer: **Hezi Israeli** ([@Heziis](https://github.com/Heziis))
+
+This fork is identical to upstream, except for two reliability fixes in the BLE connection layer,
+developed and tested on a live Home Assistant installation with the Raykube A1 Ultra:
+
+1. **Bounded startup wait** (`custom_components/tuya_local_ble/__init__.py`):
+   the initial BLE connect+setup during config-entry startup is now wrapped in a 90-second
+   `asyncio.wait_for` bound. Previously a lock that did not answer in time left the config entry
+   stuck half-loaded until Home Assistant restarted; now the attempt fails cleanly with
+   `ConfigEntryNotReady`, and Home Assistant retries setup automatically.
+2. **Cancellation-safe error handling** (`custom_components/tuya_local_ble/tuya_ble/tuya_ble.py`):
+   bare `except:` clauses were replaced with `except Exception:` so `asyncio.CancelledError`
+   (raised during shutdown/reload) is no longer swallowed, which could corrupt connection state
+   and break later reconnect attempts.
+
+Upstream credit: original integration by **Jarosław Królikowski**
+([jaroslaw-krolikowski/raykube-a1-ultra-integration](https://github.com/jaroslaw-krolikowski/raykube-a1-ultra-integration)),
+itself a fork of [ShonP40/Tuya-BLE](https://github.com/ShonP40/Tuya-BLE). License: MIT (unchanged, see LICENSE).
+
+---
+
+
 A fork of [ShonP40/Tuya-BLE](https://github.com/ShonP40/Tuya-BLE) (MIT) that gives Home Assistant local
 control of the **Raykube A1 Ultra** lock (`jtmspro`, `hc7n0urm`, `rlyxv7pe`)
 over Bluetooth, with no cloud and no gateway.

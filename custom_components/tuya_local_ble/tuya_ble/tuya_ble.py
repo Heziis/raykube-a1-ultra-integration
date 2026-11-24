@@ -823,7 +823,7 @@ class TuyaBLEDevice:
                             self._notification_handler,
                             bluez={"use_start_notify": True},
                         )
-                    except:  # [BLEAK_EXCEPTIONS, BleakNotFoundError]:
+                    except Exception:  # [LOCAL PATCH 2026-11-24: was bare except, swallowed CancelledError; original: except:]
                         self._client = None
                         _LOGGER.error("%s: starting notifications failed",
                                       self.address, exc_info=True)
@@ -859,7 +859,7 @@ class TuyaBLEDevice:
                             )
                             self._connection_error("device info request failed")
                             continue
-                    except:  # [BLEAK_EXCEPTIONS, BleakNotFoundError]:
+                    except Exception:  # [LOCAL PATCH 2026-11-24: was bare except, swallowed CancelledError; original: except:]
                         self._client = None
                         _LOGGER.error("%s: Sending device info request failed",
                                       self.address, exc_info=True)
@@ -884,7 +884,7 @@ class TuyaBLEDevice:
                             )
                             self._connection_error("pairing request failed")
                             continue
-                    except:  # [BLEAK_EXCEPTIONS, BleakNotFoundError]:
+                    except Exception:  # [LOCAL PATCH 2026-11-24: was bare except, swallowed CancelledError; original: except:]
                         self._client = None
                         _LOGGER.error("%s: Sending pairing request failed",
                                       self.address, exc_info=True)
@@ -1238,7 +1238,7 @@ class TuyaBLEDevice:
                         packet,
                         False,
                     )
-                except:
+                except Exception:  # LOCAL PATCH 2026-11-24: was bare except, swallowed CancelledError
                     _LOGGER.error(
                         "%s: Error during sending packet",
                         self.address,
