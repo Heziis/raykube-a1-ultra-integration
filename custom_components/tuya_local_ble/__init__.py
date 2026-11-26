@@ -36,6 +36,8 @@ from .const import (
     DOMAIN,
     PERIODIC_REFRESH_INTERVAL,
     PERMANENT_CHECK_INTERVAL,
+    CONF_KEEPALIVE_INTERVAL,
+    DEFAULT_KEEPALIVE_INTERVAL,
     get_connection_mode,
 )
 from .devices import TuyaBLECoordinator, TuyaBLEData, get_device_product_info
@@ -259,6 +261,41 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 hass, _async_keep_connected, timedelta(seconds=PERMANENT_CHECK_INTERVAL)
             )
         )
+
+    if sleepy_lock and mode == CONNECTION_MODE_PERMANENT:
+        # LOCAL PATCH 2026-11-26: keep-alive. Every N minutes (option
+        # keepalive_interval_minutes, 0 = off) send a read-only status request
+        # on the open session; if it fails, drop the session and reconnect.
+        keepalive_min = int(
+            entry.options.get(CONF_KEEPALIVE_INTERVAL, DEFAULT_KEEPALIVE_INTERVAL)
+        )
+        if keepalive_min > 0:
+
+            async def _async_keepalive(_now) -> None:
+                if not device.is_connected:
+                    return  # the 60 s check above handles reconnects
+                try:
+                    await asyncio.wait_for(device.update(), 60)
+                    _LOGGER.debug("%s: keep-alive status read ok", address)
+                except asyncio.CancelledError:
+                    raise
+                except Exception as ex:  # noqa: BLE001
+                    _LOGGER.warning(
+                        "%s: keep-alive status read failed (%r); reconnecting",
+                        address,
+                        ex,
+                    )
+                    try:
+                        await device.stop()
+                    except Exception:  # noqa: BLE001
+                        pass
+                    await _async_read_status()
+
+            entry.async_on_unload(
+                async_track_time_interval(
+                    hass, _async_keepalive, timedelta(minutes=keepalive_min)
+                )
+            )
 
     entry.async_on_unload(
         bluetooth.async_register_callback(
