@@ -30,6 +30,8 @@ from homeassistant.helpers.selector import (
 )
 
 from .const import (
+    CONF_KEEPALIVE_INTERVAL,
+    DEFAULT_KEEPALIVE_INTERVAL,
     CONF_CONNECTION_MODE,
     CONF_KEEP_CONNECTED,
     CONNECTION_MODES,
@@ -174,6 +176,7 @@ class TuyaBLEOptionsFlow(OptionsFlow):
             options = dict(self.config_entry.options)
             options.pop(CONF_KEEP_CONNECTED, None)  # replaced by the mode
             options[CONF_CONNECTION_MODE] = user_input[CONF_CONNECTION_MODE]
+            options[CONF_KEEPALIVE_INTERVAL] = user_input[CONF_KEEPALIVE_INTERVAL]
             return self.async_create_entry(title="", data=options)
 
         return self.async_show_form(
@@ -190,6 +193,12 @@ class TuyaBLEOptionsFlow(OptionsFlow):
                             translation_key=CONF_CONNECTION_MODE,
                         )
                     ),
+                    vol.Required(
+                        CONF_KEEPALIVE_INTERVAL,
+                        default=self.config_entry.options.get(
+                            CONF_KEEPALIVE_INTERVAL, DEFAULT_KEEPALIVE_INTERVAL
+                        ),
+                    ): vol.All(vol.Coerce(int), vol.Range(min=0, max=1440)),
                 }
             ),
         )
