@@ -43,6 +43,9 @@ PERIODIC_REFRESH_INTERVAL: Final = 300  # s
 ADVERTISEMENT_REFRESH_MIN_INTERVAL: Final = 10  # s between two reads
 ADVERTISEMENT_FALLBACK_INTERVAL: Final = 1800  # s
 PERMANENT_CHECK_INTERVAL: Final = 60  # s
+# LOCAL PATCH 2026-11-26: periodic status read while connected (permanent mode).
+CONF_KEEPALIVE_INTERVAL: Final = "keepalive_interval_minutes"
+DEFAULT_KEEPALIVE_INTERVAL: Final = 30  # minutes, 0 = off
 
 
 def get_connection_mode(options) -> str:
